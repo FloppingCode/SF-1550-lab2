@@ -77,7 +77,7 @@ function [xroot, xmax, ymax, interx, intery] = quadratic_interpolation(t, x, y)
         c1 = (y(i2) - y(i1)) / (x(i2) - x(i1));
         c2 = (((y(i3) - y(i2))/(x(i3) - x(i2))) - ((y(i2) - y(i1))/(x(i2) - x(i1)))) / (x(i3) - x(i1));
         
-        fm = @(xm) c2*(xm-x(i1)).*(xm-x(i2)) + c1*(xm-x(i1)) + c0; % Elementvis multiplikation med .*
+        fm = @(xm) c2*(xm-x(i1)).*(xm-x(i2)) + c1*(xm-x(i1)) + c0;
         x_interp = linspace(x(i1), x(i3), 100);
         y_interp = fm(x_interp);
         
