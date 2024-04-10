@@ -5,28 +5,33 @@ Iexact = 6.231467927023725;  % Ett noggrannt värde för I
 % Er kod här...
 tic
 format long
-I = trapets10d(8)
-fprintf('%4d      %12.8f   %12.8e\n',"Felet blev: "+abs(I-Iexact)+"\n");
+I = trapets10d(7)
 toc
+Trapfelet = abs(I-Iexact)
+disp("Felet blev:")
+disp(Trapfelet)
 
 %% 5b Monte-Carlo
 
-% Er kod här...
 format long
-Hypervolym = 1.2^10
-N = 10^6
-dp = 0
+Hypervolym = 1.2^10;
+N = 10^6;
+dp = 0;
 Is = zeros(1,N);
 errors = zeros(1,N);
+samp = 1.2*rand(1,10);
+tic
 for k = 1:N
-    samp = rand(1,10);
+    samp = (1.2)*rand(1,10);
     f = @(x) exp(prod(x));
     I_k = (Hypervolym*f(samp)+dp*(k-1))/k;
     dp = I_k;
     Is(k) = I_k;
     errors(k) = abs(Iexact-I_k);
 end
-
+toc
+disp("monte carlo felet:")
+disp(errors(end))
 %integral plot kinda sus
 figure;
 format long
@@ -44,6 +49,58 @@ ylabel('Error');
 title('Error plot for MonteCarlo');
 legend('Location', 'Best');
 %%
+Ians = zeros(1,N);
+cnt = 0;
+IntReal = []
+s = 5;
+for i=1:s
+    Hypervolym = 1.2^10;
+    N = 10^6;
+    dp = 0;
+    Is2 = zeros(1,N);
+    for k = 1:N
+        samp = (1.2)*rand(1,10);
+        f = @(x) exp(prod(x));
+        I_k = (Hypervolym*f(samp)+dp*(k-1))/k;
+        dp = I_k;
+        Is2(k) = I_k;
+    end
+    if (abs(Is2(end)-Iexact) < Trapfelet)
+        cnt = cnt + 1;
+    end
+    IntReal = [IntReal Is];
+    Ians = Is2 + Ians;
+end
+Ians = Ians/s;
+
+sannolikhet = cnt/s
+
+errors = zeros(1,N);
+for j = 1:N
+   errors(j) = abs(Iexact-Ians(j));
+end
+
+figure;
+format long
+hold on
+plot(1:length(Is), Ians);
+plot(1:length(Is), IntReal(1),'b');
+plot(1:length(Is), IntReal(2),'r');
+plot(1:length(Is), IntReal(3),'g');
+%plot(1:length(Is), IntReal(4),'green','DisplayName', 'MonteCarlo Integration Sammansatt');
+%plot(1:length(Is), IntReal(5),'DisplayName', 'MonteCarlo Integration Sammansatt');
+xlabel('n Samples');
+ylabel('Integral Value');
+title('MonteCarlo Integral Approximation Sammansatt');
+legend('Location', 'Best');
+grid on;
+%%error loglog-plot
+figure;
+loglog(1:length(errors), errors);
+xlabel('n Samples');
+ylabel('Error');
+title('Error plot for MonteCarlo');
+legend('Location', 'Best');
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function I = trapets10d(n)
 
