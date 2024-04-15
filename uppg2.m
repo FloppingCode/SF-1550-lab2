@@ -1,4 +1,4 @@
-%% Interpolation
+%% Interpolation; lägg till fel
 
 h = 0.25; 
 [t, x, y, ~, ~] = kastbana(h);
@@ -172,4 +172,3 @@ vx = U(:,3);
 vy = U(:,4);
 
 end
-
