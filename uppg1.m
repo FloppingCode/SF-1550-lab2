@@ -36,9 +36,12 @@ end
 % does the last one
 trussanim(xnod, ynod, bars, y);
 
-% skriv upp deras frekvens. Det är bara en funktion av egenvärdet tror jag
-%f = @(k) 1/k
-%frekvenser = arrayfun()
+%% skriv upp deras frekvens. Det är bara en funktion av egenvärdet tror jag
+f = @(k) sqrt(k)/(2*pi);
+for i=1:4
+    eigval = eigvalSorted(i);
+    disp(["num ", i, "frekvens ", f(eigval)]);
+end
 %% 1c -- Beräkning av största och minsta egenvärdena
 
 for i= 1:4

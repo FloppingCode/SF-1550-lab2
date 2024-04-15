@@ -12,95 +12,54 @@ disp("Felet blev:")
 disp(Trapfelet)
 
 %% 5b Monte-Carlo
-
 format long
+
 Hypervolym = 1.2^10;
 N = 10^6;
-dp = 0;
-Is = zeros(1,N);
-errors = zeros(1,N);
-samp = 1.2*rand(1,10);
-tic
-for k = 1:N
-    samp = (1.2)*rand(1,10);
-    f = @(x) exp(prod(x));
-    I_k = (Hypervolym*f(samp)+dp*(k-1))/k;
-    dp = I_k;
-    Is(k) = I_k;
-    errors(k) = abs(Iexact-I_k);
-end
-toc
-disp("monte carlo felet:")
-disp(errors(end))
-%integral plot kinda sus
-figure;
-format long
-plot(1:length(Is), Is, 'DisplayName', 'MonteCarlo Integration');
-xlabel('n Samples');
-ylabel('Integral Value');
-title('MonteCarlo Integral Approximation');
-legend('Location', 'Best');
-grid on;
-%error loglog-plot
-figure;
-loglog(1:length(errors), errors);
-xlabel('n Samples');
-ylabel('Error');
-title('Error plot for MonteCarlo');
-legend('Location', 'Best');
-%%
-Ians = zeros(1,N);
-cnt = 0;
-IntReal = []
-s = 5;
-for i=1:s
-    Hypervolym = 1.2^10;
-    N = 10^6;
+runs = 5
+
+all_integ = zeros(N, runs);
+all_errors = zeros(N, runs);
+
+for run = 1:runs
     dp = 0;
-    Is2 = zeros(1,N);
+    Is2 = zeros(1, N);
     for k = 1:N
-        samp = (1.2)*rand(1,10);
+        samp = (1.2) * rand(1, 10);
         f = @(x) exp(prod(x));
-        I_k = (Hypervolym*f(samp)+dp*(k-1))/k;
+        I_k = (Hypervolym * f(samp) + dp * (k - 1)) / k;
         dp = I_k;
         Is2(k) = I_k;
     end
-    if (abs(Is2(end)-Iexact) < Trapfelet)
-        cnt = cnt + 1;
-    end
-    IntReal = [IntReal Is];
-    Ians = Is2 + Ians;
-end
-Ians = Ians/s;
-
-sannolikhet = cnt/s
-
-errors = zeros(1,N);
-for j = 1:N
-   errors(j) = abs(Iexact-Ians(j));
+    all_integ(:, run) = Is2';
+    all_errors(:, run) = abs(Iexact - Is2)';
 end
 
 figure;
-format long
-hold on
-plot(1:length(Is), Ians);
-plot(1:length(Is), IntReal(1),'b');
-plot(1:length(Is), IntReal(2),'r');
-plot(1:length(Is), IntReal(3),'g');
-%plot(1:length(Is), IntReal(4),'green','DisplayName', 'MonteCarlo Integration Sammansatt');
-%plot(1:length(Is), IntReal(5),'DisplayName', 'MonteCarlo Integration Sammansatt');
-xlabel('n Samples');
-ylabel('Integral Value');
-title('MonteCarlo Integral Approximation Sammansatt');
+hold on;
+for run = 1:runs
+    plot(1:length(all_integ), all_integ(:, run), 'DisplayName', ['Run ', num2str(run)]);
+end
+
+xlabel('Antalet punkter');
+ylabel('Integralens värde');
+title('Monte Carlo - integral');
 legend('Location', 'Best');
 grid on;
-%%error loglog-plot
+
 figure;
-loglog(1:length(errors), errors);
-xlabel('n Samples');
-ylabel('Error');
-title('Error plot for MonteCarlo');
+hold on;
+for run = 1:runs
+    loglog(1:length(all_errors), all_errors(:, run), 'DisplayName', ['Run ', num2str(run)]);
+end
+arr = ones(N, 1) * Trapfelet;
+plot(1:N, arr,'DisplayName', "trapfelet");
+axis([0 N -10^-3 10^-3]);
+xlabel('Antalet punkter')
+ylabel('Fel');
+title('Monte Carlo - fel');
 legend('Location', 'Best');
+grid on;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function I = trapets10d(n)
 
