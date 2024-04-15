@@ -19,7 +19,7 @@ E = dot(X-modely',X-modely')/N; % MSE
 
 %% 3b Linjär + periodisk modell
 % skattar L från plot
-L = 485;
+L = 472;
 B = zeros(N,4);
 for i = 1:N
    B(i,1) = 1;
@@ -30,12 +30,13 @@ end
 d = B\X;
 f_periodic = @(t) d(1) + d(2)*t + d(3)*sin(2*pi*t/L)+d(4)*cos(2*pi*t/L);
 newModely = arrayfun(f_periodic,t);
-E_periodic = dot(X-newModely',X-newModely')/N; % MSE
+disp("MKM periodisk")
+E_periodic = dot(X-newModely',X-newModely')/N % MSE
 
 %% 3c Icke-linjär modell
-% vi tar föregående som startgissning
-x0 = [d(1), d(2), d(3), d(4), 486]';
-MKMsol = gaussNewton(x0,0.2,X);
+% vi tar något som liknar föregående som startgissning
+x0 = [d(1), d(2), d(3), d(4), 430]';
+MKMsol = gaussNewton(x0,0.05925,X)
 f_nonlinear = @(t) MKMsol(1) + MKMsol(2)*t + MKMsol(3)*sin(2*pi*t/MKMsol(5))+MKMsol(4)*cos(2*pi*t/MKMsol(5));
 newModely_nonlinear = arrayfun(f_nonlinear,t);
 E_nonlinear = dot(X-newModely_nonlinear',X-newModely_nonlinear')/N; % MSE
